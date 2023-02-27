@@ -13,7 +13,7 @@ use sqlite3_sys::*;
 
 use anyhow::{Ok, Result};
 
-use rdbc::driver::{self, callback::BoxedCallback, RDBCError};
+use rdbc_rs::driver::{self, callback::BoxedCallback, RDBCError};
 
 pub fn colunm_decltype(
     stmt: *mut sqlite3_stmt,
@@ -264,7 +264,7 @@ fn get_bind_index(stmt: *mut sqlite3_stmt, pos: driver::ArgName) -> anyhow::Resu
 }
 
 impl Statement {
-    unsafe fn bind_args(&mut self, args: Vec<rdbc::driver::Argument>) -> anyhow::Result<()> {
+    unsafe fn bind_args(&mut self, args: Vec<rdbc_rs::driver::Argument>) -> anyhow::Result<()> {
         // sqlite3_clear_bindings(self.stmt);
         sqlite3_reset(self.stmt);
 
@@ -315,7 +315,7 @@ impl Statement {
         Ok(())
     }
 
-    fn _query(&mut self, args: Vec<rdbc::Argument>) -> Result<Box<dyn driver::Rows>> {
+    fn _query(&mut self, args: Vec<rdbc_rs::Argument>) -> Result<Box<dyn driver::Rows>> {
         unsafe { self.bind_args(args) }?;
 
         return Ok(Box::new(Rows {
@@ -329,7 +329,11 @@ impl Statement {
 }
 
 impl driver::Statement for Statement {
-    fn execute(&mut self, args: Vec<rdbc::Argument>, callback: BoxedCallback<driver::ExecResult>) {
+    fn execute(
+        &mut self,
+        args: Vec<rdbc_rs::Argument>,
+        callback: BoxedCallback<driver::ExecResult>,
+    ) {
         let exec = || {
             unsafe { self.bind_args(args) }?;
 
@@ -365,7 +369,11 @@ impl driver::Statement for Statement {
         })))
     }
 
-    fn query(&mut self, args: Vec<rdbc::Argument>, callback: BoxedCallback<Box<dyn driver::Rows>>) {
+    fn query(
+        &mut self,
+        args: Vec<rdbc_rs::Argument>,
+        callback: BoxedCallback<Box<dyn driver::Rows>>,
+    ) {
         callback.invoke(self._query(args))
     }
 }

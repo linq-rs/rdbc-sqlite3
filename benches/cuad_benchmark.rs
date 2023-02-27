@@ -3,7 +3,7 @@ use criterion::{criterion_group, criterion_main};
 
 // This is a struct that tells Criterion.rs to use the "futures" crate's current-thread executor
 use criterion::async_executor::FuturesExecutor;
-use rdbc::{ArgName, ArgValue, Database, Preparable};
+use rdbc_rs::{ArgName, ArgValue, Database, Preparable};
 
 use std::time::Duration;
 use std::{
@@ -14,7 +14,7 @@ use std::{
 use rdbc_sqlite3::*;
 
 #[allow(dead_code)]
-async fn prepare_benchmark() -> rdbc::Database {
+async fn prepare_benchmark() -> rdbc_rs::Database {
     _ = register_sqlite3();
 
     let path: PathBuf = ".test".into();
@@ -29,9 +29,9 @@ async fn prepare_benchmark() -> rdbc::Database {
 
     let path = format!("file:{}", path.to_string_lossy());
 
-    let mut db: Database = rdbc::open("sqlite3", &path).unwrap();
+    let mut db: Database = rdbc_rs::open("sqlite3", &path).unwrap();
 
-    // let mut db = rdbc::open("sqlite3", "file:memdb_commit?mode=memory&cache=shared").unwrap();
+    // let mut db = rdbc_rs::open("sqlite3", "file:memdb_commit?mode=memory&cache=shared").unwrap();
 
     let mut stmt = db
         .prepare("CREATE TABLE t(x INTEGER PRIMARY KEY ASC, y TEXT, z NUMERIC);")
@@ -43,16 +43,16 @@ async fn prepare_benchmark() -> rdbc::Database {
     db
 }
 
-async fn insert_one_row(mut db: rdbc::Database) {
+async fn insert_one_row(mut db: rdbc_rs::Database) {
     let mut stmt = db.prepare("INSERT INTO t(y,z) VALUES(?,?);").await.unwrap();
 
     _ = stmt
         .execute(vec![
-            rdbc::Argument {
+            rdbc_rs::Argument {
                 name: ArgName::Offset(1),
                 value: ArgValue::String("hello world".to_owned()),
             },
-            rdbc::Argument {
+            rdbc_rs::Argument {
                 name: ArgName::Offset(2),
                 value: ArgValue::String("7.82910138827292".to_owned()),
             },

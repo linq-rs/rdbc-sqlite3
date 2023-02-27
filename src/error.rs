@@ -1,6 +1,6 @@
 use std::os::raw::{c_char, c_int};
 
-use rdbc::driver::RDBCError;
+use rdbc_rs::driver::RDBCError;
 use sqlite3_sys::*;
 
 pub fn native_error(code: i32, message: String) -> anyhow::Error {

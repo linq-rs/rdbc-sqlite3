@@ -5,7 +5,7 @@ use std::{
 
 use rdbc_sqlite3::*;
 
-use rdbc::*;
+use rdbc_rs::*;
 
 #[allow(dead_code)]
 fn create_test_dir() -> PathBuf {
@@ -61,12 +61,12 @@ async fn test_stmt() {
 
     let result = stmt
         .execute(vec![
-            rdbc::Argument {
-                name: rdbc::ArgName::Offset(1),
+            rdbc_rs::Argument {
+                name: rdbc_rs::ArgName::Offset(1),
                 value: driver::ArgValue::String("hello world".to_owned()),
             },
-            rdbc::Argument {
-                name: rdbc::ArgName::Offset(2),
+            rdbc_rs::Argument {
+                name: rdbc_rs::ArgName::Offset(2),
                 value: driver::ArgValue::String("7.82910138827292".to_owned()),
             },
         ])
@@ -115,17 +115,17 @@ async fn test_stmt() {
 
     let id = rows.get("x", driver::ColumnType::I64).await.unwrap();
 
-    assert_eq!(id, Some(rdbc::ArgValue::I64(1)));
+    assert_eq!(id, Some(rdbc_rs::ArgValue::I64(1)));
 
     let y = rows.get("y", driver::ColumnType::String).await.unwrap();
 
-    assert_eq!(y, Some(rdbc::ArgValue::String("hello world".to_owned())));
+    assert_eq!(y, Some(rdbc_rs::ArgValue::String("hello world".to_owned())));
 
     let z = rows.get("z", driver::ColumnType::String).await.unwrap();
 
     assert_eq!(
         z,
-        Some(rdbc::ArgValue::String("7.82910138827292".to_owned()))
+        Some(rdbc_rs::ArgValue::String("7.82910138827292".to_owned()))
     );
 
     assert!(!rows.next().await.unwrap());
@@ -164,12 +164,12 @@ async fn test_stmt_named_args() {
 
     let result = stmt
         .execute(vec![
-            rdbc::Argument {
-                name: rdbc::ArgName::String(":y".to_owned()),
+            rdbc_rs::Argument {
+                name: rdbc_rs::ArgName::String(":y".to_owned()),
                 value: driver::ArgValue::String("hello world".to_owned()),
             },
-            rdbc::Argument {
-                name: rdbc::ArgName::String(":z".to_owned()),
+            rdbc_rs::Argument {
+                name: rdbc_rs::ArgName::String(":z".to_owned()),
                 value: driver::ArgValue::String("7.82910138827292".to_owned()),
             },
         ])
@@ -189,17 +189,17 @@ async fn test_stmt_named_args() {
 
     let id = rows.get(0, driver::ColumnType::I64).await.unwrap();
 
-    assert_eq!(id, Some(rdbc::ArgValue::I64(1)));
+    assert_eq!(id, Some(rdbc_rs::ArgValue::I64(1)));
 
     let y = rows.get(1, driver::ColumnType::String).await.unwrap();
 
-    assert_eq!(y, Some(rdbc::ArgValue::String("hello world".to_owned())));
+    assert_eq!(y, Some(rdbc_rs::ArgValue::String("hello world".to_owned())));
 
     let z = rows.get(2, driver::ColumnType::String).await.unwrap();
 
     assert_eq!(
         z,
-        Some(rdbc::ArgValue::String("7.82910138827292".to_owned()))
+        Some(rdbc_rs::ArgValue::String("7.82910138827292".to_owned()))
     );
 
     assert!(!rows.next().await.unwrap());
@@ -229,12 +229,12 @@ async fn test_multi_stmt() {
 
     let result = stmt
         .execute(vec![
-            rdbc::Argument {
-                name: rdbc::ArgName::String("@y".to_owned()),
+            rdbc_rs::Argument {
+                name: rdbc_rs::ArgName::String("@y".to_owned()),
                 value: driver::ArgValue::String("hello world".to_owned()),
             },
-            rdbc::Argument {
-                name: rdbc::ArgName::String(":z".to_owned()),
+            rdbc_rs::Argument {
+                name: rdbc_rs::ArgName::String(":z".to_owned()),
                 value: driver::ArgValue::String("7.82910138827292".to_owned()),
             },
         ])
@@ -249,27 +249,30 @@ async fn test_multi_stmt() {
     assert!(rows.next().await.unwrap());
 
     let id = rows
-        .get(rdbc::ArgName::Offset(0), driver::ColumnType::I64)
+        .get(rdbc_rs::ArgName::Offset(0), driver::ColumnType::I64)
         .await
         .unwrap();
 
-    assert_eq!(id.unwrap(), rdbc::ArgValue::I64(1));
+    assert_eq!(id.unwrap(), rdbc_rs::ArgValue::I64(1));
 
     let y = rows
-        .get(rdbc::ArgName::Offset(1), driver::ColumnType::String)
+        .get(rdbc_rs::ArgName::Offset(1), driver::ColumnType::String)
         .await
         .unwrap();
 
-    assert_eq!(y.unwrap(), rdbc::ArgValue::String("hello world".to_owned()));
+    assert_eq!(
+        y.unwrap(),
+        rdbc_rs::ArgValue::String("hello world".to_owned())
+    );
 
     let z = rows
-        .get(rdbc::ArgName::Offset(2), driver::ColumnType::String)
+        .get(rdbc_rs::ArgName::Offset(2), driver::ColumnType::String)
         .await
         .unwrap();
 
     assert_eq!(
         z.unwrap(),
-        rdbc::ArgValue::String("7.82910138827292".to_owned())
+        rdbc_rs::ArgValue::String("7.82910138827292".to_owned())
     );
 
     assert!(!rows.next().await.unwrap());
@@ -304,13 +307,13 @@ async fn test_tx_commit_data() {
 
         let result = stmt
             .execute(vec![
-                rdbc::Argument {
-                    name: rdbc::ArgName::Offset(1),
-                    value: rdbc::ArgValue::String("hello world".to_owned()),
+                rdbc_rs::Argument {
+                    name: rdbc_rs::ArgName::Offset(1),
+                    value: rdbc_rs::ArgValue::String("hello world".to_owned()),
                 },
-                rdbc::Argument {
-                    name: rdbc::ArgName::Offset(2),
-                    value: rdbc::ArgValue::String("7.82910138827292".to_owned()),
+                rdbc_rs::Argument {
+                    name: rdbc_rs::ArgName::Offset(2),
+                    value: rdbc_rs::ArgValue::String("7.82910138827292".to_owned()),
                 },
             ])
             .await
@@ -354,27 +357,30 @@ async fn test_tx_commit_data() {
         assert!(rows.next().await.unwrap());
 
         let id = rows
-            .get(rdbc::ArgName::Offset(0), driver::ColumnType::I64)
+            .get(rdbc_rs::ArgName::Offset(0), driver::ColumnType::I64)
             .await
             .unwrap();
 
-        assert_eq!(id.unwrap(), rdbc::ArgValue::I64(1));
+        assert_eq!(id.unwrap(), rdbc_rs::ArgValue::I64(1));
 
         let y = rows
-            .get(rdbc::ArgName::Offset(1), driver::ColumnType::String)
+            .get(rdbc_rs::ArgName::Offset(1), driver::ColumnType::String)
             .await
             .unwrap();
 
-        assert_eq!(y.unwrap(), rdbc::ArgValue::String("hello world".to_owned()));
+        assert_eq!(
+            y.unwrap(),
+            rdbc_rs::ArgValue::String("hello world".to_owned())
+        );
 
         let z = rows
-            .get(rdbc::ArgName::Offset(2), driver::ColumnType::String)
+            .get(rdbc_rs::ArgName::Offset(2), driver::ColumnType::String)
             .await
             .unwrap();
 
         assert_eq!(
             z.unwrap(),
-            rdbc::ArgValue::String("7.82910138827292".to_owned())
+            rdbc_rs::ArgValue::String("7.82910138827292".to_owned())
         );
 
         assert!(!rows.next().await.unwrap());
@@ -417,27 +423,30 @@ async fn test_tx_commit_data() {
     assert!(rows.next().await.unwrap());
 
     let id = rows
-        .get(rdbc::ArgName::Offset(0), driver::ColumnType::I64)
+        .get(rdbc_rs::ArgName::Offset(0), driver::ColumnType::I64)
         .await
         .unwrap();
 
-    assert_eq!(id.unwrap(), rdbc::ArgValue::I64(1));
+    assert_eq!(id.unwrap(), rdbc_rs::ArgValue::I64(1));
 
     let y = rows
-        .get(rdbc::ArgName::Offset(1), driver::ColumnType::String)
+        .get(rdbc_rs::ArgName::Offset(1), driver::ColumnType::String)
         .await
         .unwrap();
 
-    assert_eq!(y.unwrap(), rdbc::ArgValue::String("hello world".to_owned()));
+    assert_eq!(
+        y.unwrap(),
+        rdbc_rs::ArgValue::String("hello world".to_owned())
+    );
 
     let z = rows
-        .get(rdbc::ArgName::Offset(2), driver::ColumnType::String)
+        .get(rdbc_rs::ArgName::Offset(2), driver::ColumnType::String)
         .await
         .unwrap();
 
     assert_eq!(
         z.unwrap(),
-        rdbc::ArgValue::String("7.82910138827292".to_owned())
+        rdbc_rs::ArgValue::String("7.82910138827292".to_owned())
     );
 }
 
@@ -470,13 +479,13 @@ async fn test_tx_rollback_data() {
 
         let result = stmt
             .execute(vec![
-                rdbc::Argument {
-                    name: rdbc::ArgName::Offset(1),
-                    value: rdbc::ArgValue::String("hello world".to_owned()),
+                rdbc_rs::Argument {
+                    name: rdbc_rs::ArgName::Offset(1),
+                    value: rdbc_rs::ArgValue::String("hello world".to_owned()),
                 },
-                rdbc::Argument {
-                    name: rdbc::ArgName::Offset(2),
-                    value: rdbc::ArgValue::String("7.82910138827292".to_owned()),
+                rdbc_rs::Argument {
+                    name: rdbc_rs::ArgName::Offset(2),
+                    value: rdbc_rs::ArgValue::String("7.82910138827292".to_owned()),
                 },
             ])
             .await
@@ -520,27 +529,30 @@ async fn test_tx_rollback_data() {
         assert!(rows.next().await.unwrap());
 
         let id = rows
-            .get(rdbc::ArgName::Offset(0), driver::ColumnType::I64)
+            .get(rdbc_rs::ArgName::Offset(0), driver::ColumnType::I64)
             .await
             .unwrap();
 
-        assert_eq!(id.unwrap(), rdbc::ArgValue::I64(1));
+        assert_eq!(id.unwrap(), rdbc_rs::ArgValue::I64(1));
 
         let y = rows
-            .get(rdbc::ArgName::Offset(1), driver::ColumnType::String)
+            .get(rdbc_rs::ArgName::Offset(1), driver::ColumnType::String)
             .await
             .unwrap();
 
-        assert_eq!(y.unwrap(), rdbc::ArgValue::String("hello world".to_owned()));
+        assert_eq!(
+            y.unwrap(),
+            rdbc_rs::ArgValue::String("hello world".to_owned())
+        );
 
         let z = rows
-            .get(rdbc::ArgName::Offset(2), driver::ColumnType::String)
+            .get(rdbc_rs::ArgName::Offset(2), driver::ColumnType::String)
             .await
             .unwrap();
 
         assert_eq!(
             z.unwrap(),
-            rdbc::ArgValue::String("7.82910138827292".to_owned())
+            rdbc_rs::ArgValue::String("7.82910138827292".to_owned())
         );
 
         assert!(!rows.next().await.unwrap());
