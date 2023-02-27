@@ -2,11 +2,16 @@
 name = "rdbc_sqlite3"
 version = "0.1.0"
 edition = "2021"
+license-file = "LICENSE"
+keywords = ["futures-rs", "database", "rdbc", "sqlite3", "driver"]
+description = "rdbc sqlite3 driver"
+readme = "README.md"
+documentation = "https://docs.rs/rdbc_sqlite3"
 
 [dependencies]
 anyhow = "1.0.57"
 log = "0.4.16"
-rdbc_rs = { version = "^0.1" }
+rdbc-rs = { version = "^0.1" }
 sqlite3-sys = "0.14.0"
 once_cell = "1.16.0"
 
